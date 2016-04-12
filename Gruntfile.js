@@ -97,7 +97,8 @@ module.exports = function(grunt) {
 						"util/JSONP.js",
 						"util/LocalStorage.js",
 						"Compat.js",
-						"ui/*.js"
+						"ui/*.js",
+						"Register.js"
 					]
 				}
 			},
@@ -173,7 +174,8 @@ module.exports = function(grunt) {
 						"Animations.less",
 						"TinyMCE.less",
 						"CropRect.less",
-						"ImagePanel.less"
+						"ImagePanel.less",
+						"Arrows.less"
 					],
 					append: ["Icons.less"],
 					importFrom: "js/tinymce/tinymce.js",
@@ -192,7 +194,8 @@ module.exports = function(grunt) {
 						"Animations.less",
 						"TinyMCE.less",
 						"CropRect.less",
-						"ImagePanel.less"
+						"ImagePanel.less",
+						"Arrows.less"
 					],
 					append: ["Icons.Ie7.less"],
 					importFrom: "js/tinymce/tinymce.js",
@@ -369,6 +372,18 @@ module.exports = function(grunt) {
 				options: {
 					onBeforeSave: function(zip) {
 						zip.addData("dist/version.txt", packageData.version);
+
+						var src = grunt.file.read("js/tinymce/tinymce.js").toString();
+
+						zip.addData(
+							"dist/tinymce.jquery.js",
+							"window.console && console.log('Use tinymce.js instead of tinymce.jquery.js.');\n" + src
+						);
+
+						zip.addData(
+							"dist/tinymce.jquery.min.js",
+							"window.console && console.log('Use tinymce.min.js instead of tinymce.jquery.min.js.');\n" + src
+						);
 					},
 
 					pathFilter: function(zipFilePath) {
@@ -513,6 +528,11 @@ module.exports = function(grunt) {
 						zip.addData(
 							"tinymce.jquery.min.js",
 							"window.console && console.log('Use tinymce.min.js instead of tinymce.jquery.min.js.');\n" + src
+						);
+
+						zip.addFile(
+							"jquery.tinymce.js",
+							"js/tinymce/classes/jquery.tinymce.js"
 						);
 					},
 
@@ -711,7 +731,7 @@ module.exports = function(grunt) {
 		watch: {
 			core: {
 				files: ["js/tinymce/classes/**/*.js"],
-				tasks: ["eslint:core", "amdlc:core", "amdlc:core-jquery", "skin"],
+				tasks: ["amdlc:core", "bolt-build", "skin"],
 				options: {
 					spawn: false
 				}
@@ -720,7 +740,7 @@ module.exports = function(grunt) {
 			plugins: {
 				files: ["js/tinymce/plugins/**/*.js"],
 				tasks: [
-					"amdlc:paste-plugin", "bolt:imagetools-plugin", "amdlc:codesample-plugin",
+					"amdlc:paste-plugin", "bolt-build:imagetools-plugin", "amdlc:codesample-plugin",
 					"amdlc:table-plugin", "amdlc:spellchecker-plugin", "uglify:plugins",
 					"eslint:plugins"
 				],
